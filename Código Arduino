@@ -1,0 +1,62 @@
+#include <SoftwareSerial.h>
+/*SoftwareSerial BT(2,3); //RX, TX
+String nombre = "BABYBIRD"; //nombre que aparecerá
+String password = "1234";*/
+
+//Variables a usar
+unsigned long inicio, fin;
+int cont = 1, a = 0, lectura_emg;
+float frecuencia, DifFrec, DifSe, Riesgo, SenhalMAX = 0, T;
+
+//Pines
+int EMG = 0, pin_led_buzzer = 13;
+
+void setup()
+{
+  Serial.begin(9600);
+  //BT.begin(9600);
+  pinMode(pin_led_buzzer,OUTPUT);
+  pinMode(EMG,INPUT);
+}
+
+//Programa principal
+void loop() {
+  // put your main code here, to run repeatedly:
+  int lectura_emg = analogRead(EMG);
+  float voltaje_emg = lectura_emg*(5.0/1023.0);
+  
+  if(cont==1){
+    if(voltaje_emg>SenhalMAX){
+      SenhalMAX = voltaje_emg;
+    }
+    else if(voltaje_emg<SenhalMAX){
+      inicio=millis();
+      cont=cont+1;
+    }
+  }
+  else if(cont==2){
+    if(voltaje_emg<=0.2){
+      a=1;
+    }
+    if(a){
+      if(voltaje_emg==SenhalMAX){
+        fin=millis();
+        cont=cont+1;
+      }
+    }
+  }
+  else{
+    T=(fin-inicio)/1000.0;
+    frecuencia = 1.0/T;
+    if(frecuencia>=0.56){
+    if (SenhalMAX>=2.5){
+        digitalWrite(pin_led_buzzer,HIGH);
+        DifFrec=frecuencia-0.56;
+        DifSe=SenhalMAX-3.7;
+        Riesgo=60+((DifFrec*50+DifSe*50)/2);
+        //BT.println(Riesgo);
+      }
+    }
+  }
+  delay(1);
+}
