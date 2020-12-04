@@ -1,16 +1,3 @@
-//generalized wave freq detection with 38.5kHz sampling rate and interrupts
-//by Amanda Ghassaei
-//https://www.instructables.com/id/Arduino-Frequency-Detection/
-//Sept 2012
-
-/*
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
-*/
-
 //clipping indicator variables
 boolean clipping = 0;
 
@@ -39,7 +26,7 @@ int timerTol = 10;//timer tolerance- adjust this if you need
 
 
 void setup(){
-  delay(5000);
+  delay(5000);                                                        //IMPORTANTE
   Serial.begin(9600);
   
   pinMode(13,OUTPUT);//led indicator pin
@@ -70,11 +57,11 @@ ISR(ADC_vect) {//when new ADC value ready
   PORTB &= B11101111;//set pin 12 low
   prevData = newData;//store previous value
   newData = ADCH;//get value from A0
-  if (newData > maxVoltage && timer){
+if (newData > maxVoltage && timer){                                                       //IMPORTANTE
     maxVoltage = newData;
     maxVoltage_presentation = maxVoltage * (2.52 * 2 / 256.0);
   }
-  if (prevData < 64 && newData >=64){//if increasing and crossing midpoint
+  if (prevData < 64 && newData >=64){//if increasing and crossing midpoint                //IMPORTANTE
     newSlope = newData - prevData;//calculate slope
     if (abs(newSlope-maxSlope)<slopeTol){//if slopes are ==
       //record new data and reset time
@@ -122,7 +109,7 @@ ISR(ADC_vect) {//when new ADC value ready
   }
     
   if (newData == 0 || newData == 1023){//if clipping
-    //PORTB |= B00100000;//set pin 13 high- turn on clipping indicator led
+    //PORTB |= B00100000;//set pin 13 high- turn on clipping indicator led                /YA NO PRENDE EL LED
     clipping = 1;//currently clipping
   }
   
@@ -136,6 +123,8 @@ void reset(){//clea out some variables
 }
 
 
+
+//YA NO USA ESTA FUNCIÓN
 void checkClipping(){//manage clipping indicator LED
   if (clipping){//if currently clipping
     PORTB &= B11011111;//turn off clipping indicator led
