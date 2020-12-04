@@ -39,7 +39,7 @@ int timerTol = 10;//timer tolerance- adjust this if you need
 
 
 void setup(){
-  
+  delay(5000);
   Serial.begin(9600);
   
   pinMode(13,OUTPUT);//led indicator pin
@@ -72,9 +72,9 @@ ISR(ADC_vect) {//when new ADC value ready
   newData = ADCH;//get value from A0
   if (newData > maxVoltage && timer){
     maxVoltage = newData;
-    maxVoltage_presentation = maxVoltage * (5.0 / 256.0);
+    maxVoltage_presentation = maxVoltage * (2.52 * 2 / 256.0);
   }
-  if (prevData < 127 && newData >=127){//if increasing and crossing midpoint
+  if (prevData < 64 && newData >=64){//if increasing and crossing midpoint
     newSlope = newData - prevData;//calculate slope
     if (abs(newSlope-maxSlope)<slopeTol){//if slopes are ==
       //record new data and reset time
@@ -122,7 +122,7 @@ ISR(ADC_vect) {//when new ADC value ready
   }
     
   if (newData == 0 || newData == 1023){//if clipping
-    PORTB |= B00100000;//set pin 13 high- turn on clipping indicator led
+    //PORTB |= B00100000;//set pin 13 high- turn on clipping indicator led
     clipping = 1;//currently clipping
   }
   
@@ -146,22 +146,29 @@ void checkClipping(){//manage clipping indicator LED
 
 void loop(){
   
-  checkClipping();
+  //checkClipping();
   
   frequency = 38462/float(period);//calculate frequency timer rate/period
   
   //print results
-  Serial.print(frequency);
-  Serial.println(" hz");
-  Serial.print(maxVoltage_presentation);
-  Serial.println(" V");
-  difFreq=frequency-0.56;
-  difVol=maxVoltage_presentation-2.5;
-  if(difVol>0 && difFreq>0){
-    risk = 50 + ((difFreq*50+difVol*50)/2);
-    Serial.print(risk);
-    Serial.println(" %");
+  if(frequency < 123132564456){
+    /*Serial.print(frequency);
+    Serial.println(" hz");
+    Serial.print(maxVoltage_presentation);
+    Serial.println(" V");*/
+    difFreq=frequency-0.56;
+    difVol=maxVoltage_presentation-1.42;
+    if(difVol>=0 && difFreq>=0){
+      risk = 50 + ((difFreq*50+difVol*50)/2);
+      /*Serial.print(risk);
+      Serial.println(" %");*/
+      //if(Serial.available()>0){
+      Serial.println(risk);
+      //}
+      PORTB |= B00100000;//set pin 13 high- turn on clipping indicator led
+    }
   }
+
   delay(100);//feel free to remove this if you want
   
   //do other stuff here
