@@ -1,7 +1,7 @@
-//clipping indicator variables
+//Variable indicadora de recorte (frecuenciómetro)
 boolean clipping = 0;
 
-//data storage variables
+//Variables que almacenan datos
 byte newData = 0;
 byte prevData = 0;
 unsigned int time = 0;//keeps time and sends vales to store in timer[] occasionally
@@ -18,8 +18,9 @@ float maxVoltage_presentation;
 float risk;
 float difFreq;
 float difVol;
+int risk_bt;
 
-//variables for decided whether you have a match
+//Variables del frecuenciómetro
 byte noMatch = 0;//counts how many non-matches you've received to reset variables if it's been too long
 byte slopeTol = 3;//slope tolerance- adjust this if you need
 int timerTol = 10;//timer tolerance- adjust this if you need
@@ -152,7 +153,8 @@ void loop(){
       /*Serial.print(risk);
       Serial.println(" %");*/
       //if(Serial.available()>0){
-      Serial.println(risk);
+      risk_bt=(int)risk;          //Casteamos a una variable entera porque Kodular solo permite valores enteros
+      Serial.println(risk_bt);
       //}
       PORTB |= B00100000;//set pin 13 high- turn on clipping indicator led
     }
